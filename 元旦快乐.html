@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>素贤专属元旦祝福</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #333;
+            background-image: url('https://i.imgur.com/xxxxxx.png'); /* https://img.cdn1.vip/i/6954eca53d7f7_1767173285.webp */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 1;
+        }
+
+        .firework {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #ff6b6b;
+            animation: explode 1s linear;
+            z-index: 2;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(40); opacity: 0; }
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .typing-effect {
+            white-space: pre-line;
+            overflow: hidden;
+            border-right: 2px solid #ff6b6b;
+            animation: typing 5s steps(50, end), blink-caret 0.75s step-end infinite;
+            max-width: 80vw;
+            margin: 2rem auto 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #333;
+            z-index: 3;
+            position: relative;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            50% { border-color: transparent }
+        }
+
+        .note {
+            position: absolute;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            color: #333;
+            font-weight: bold;
+            max-width: 60vw;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3;
+            cursor: move;
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* 消失动画 */
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translateY(-30px) scale(0.8); opacity: 0; }
+            70% { transform: translateY(8px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* 便签消失动画 */
+        .note.fade-out {
+            opacity: 0;
+            transform: scale(0.8) translateY(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div id="fireworks"></div>
+    <div class="popup" id="welcomePopup">
+        <h2 class="text-2xl mb-4">🎁 崽崽元旦祝福</h2>
+        <p class="mb-4">你有一份来自云南昆明祝福</p>
+        <button id="confirmBtn" class="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600">
+            开启祝福 ✨
+        </button>
+    </div>
+
+    <div id="typingContainer" class="hidden"></div>
+
+    <script>
+        const welcomeText = `五年前，我们因为一个不经意的瞬间相遇，开启了这段超越性别的友谊。五年里，我们一起笑过，成长过，从QQ到微信，再到快手和现在的抖音，无时无刻在分享着自己的生活，这份情谊如陈酿的美酒，越品越香。从青涩到成熟，从陌生到默契，每一个瞬间都值得珍藏。五年的时光，让我们的友情褪去了青涩，变得更加纯粹。我们可以毫无顾忌地畅谈人生，这种默契，无需多言。在这个容易将异性关系过度解读的世界里，我们的友情显得格外珍贵。五年的相处，让我们打破了刻板印象，用行动证明：男女之间也可以有纯粹的友谊。这份情谊，无关爱情，却比爱情更长久。五年只是一个开始，未来的日子里，愿我们继续保持这份纯粹的友谊。无论时光如何流转，这份情谊都将成为生命中最温暖的存在😘。`;
+
+        const noteContents = [
+            '🎉 2026新年快乐',
+            '🎆 一寸一礼欢喜',
+            '🌠 新年胜旧年',
+            '✨ 欢愉且胜意',
+            '🎁 好运全加满',
+            '🌟 平安喜乐',
+            '😘 所愿皆成真',
+            '🌙 岁岁常欢愉',
+            '🎊 无灾无难',
+            '💫 未来皆可期',
+            '🎈 新岁启封',
+            '😍 万象更新',
+            '🎍 吉庆有余',
+            '😋 所行化坦途',
+            '🎐 新年胜旧年',
+            '😜 有趣有盼',
+            '🎯 万事开门红',
+            '🎨 温柔且浪漫',
+            '🥰 继续热爱',
+            '🥰 被爱包围',
+            '💰 财运滚滚来',
+            '📚 学业节节高',
+            '💪 万事皆顺意',
+            '😇 喜乐常相伴',
+            '🌈 生活多色彩',
+            '🍬 甜满一整年',
+            '🎀 好运连连',
+            '🍰 日子甜如蜜',
+            '🎈 快乐不打烊',
+            '🌻 向阳而生',
+            '🍓 莓有烦恼',
+            '🍊 万事大吉',
+            '🍎 平平安安',
+            '🍉 清凉一夏',
+            '🍑 桃你喜欢',
+            '🍒 甜甜蜜蜜',
+            '🥑 万事无忧',
+            '🥐 生活有滋味',
+            '🍯 甜满心间',
+            '🍭 快乐加倍',
+            '🍩 好运甜甜',
+            '🍪 生活有趣',
+            '🍫 甜蜜常伴',
+            '🍿 快乐满溢',
+            '🧋 奶茶自由',
+            '☕ 惬意时光',
+            '🍵 温暖常伴',
+            '🍶 万事胜意',
+            '🍷 生活微醺',
+            '🍸 日子精彩',
+            '🍹 快乐满杯',
+            '🧃 清爽一整年',
+            '🥤 好运满杯',
+            '🍼 被爱包围',
+            '🍦 清凉一夏',
+            '🍧 甜满心头',
+            '🍨 生活甜蜜',
+            '🍰 好运连连',
+            '🧁 甜满一整年',
+            '🍭 快乐不重样',
+            '🍩 生活有趣',
+            '🍪 万事顺遂',
+            '🍫 甜蜜常伴',
+            '🍿 快乐满溢',
+            '🧋 奶茶自由',
+            '☕ 惬意时光',
+            '🍵 温暖常伴',
+            '🍶 万事胜意',
+            '🍷 生活微醺',
+            '🍸 日子精彩',
+            '🍹 快乐满杯',
+            '🧃 清爽一整年',
+            '🥤 好运满杯',
+            '🍼 被爱包围'
+        ];
+
+        let noteIndex = 0;
+        let animationInterval;
+        let zIndexCounter = 10;
+        const allNotes = []; // 存储所有便签元素，用于后续批量删除
+
+        // 烟花动画
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = `${Math.random() * 100}vw`;
+            firework.style.animationDelay = `${Math.random() * 2}s`;
+            firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            document.getElementById('fireworks').appendChild(firework);
+            
+            setTimeout(() => {
+                firework.remove();
+            }, 1000);
+        }
+
+        setInterval(createFirework, 100);
+
+        // 打字动画
+        function typeWriter(text, element) {
+            let i = 0;
+            const speed = 50;
+            const cursorBlink = setInterval(() => {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(cursorBlink);
+                    startNotes();
+                }
+            }, speed);
+        }
+
+        // 初始弹窗
+        document.getElementById('confirmBtn').addEventListener('click', () => {
+            document.getElementById('welcomePopup').style.display = 'none';
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-effect';
+            document.body.appendChild(typingDiv);
+            typeWriter(welcomeText, typingDiv);
+        });
+
+        // 开始生成便签
+        function startNotes() {
+            animationInterval = setInterval(() => {
+                if (noteIndex < noteContents.length) {
+                    createNote();
+                    noteIndex++;
+                } else {
+                    clearInterval(animationInterval);
+                    // 所有便签弹出后，2秒后执行全部消失
+                    setTimeout(fadeOutAllNotes, 2000);
+                }
+            }, 300);
+        }
+
+        // 创建便签
+        function createNote() {
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.textContent = noteContents[noteIndex];
+            
+            const maxX = window.innerWidth - 180;
+            const maxY = window.innerHeight - 80;
+            note.style.left = `${Math.random() * maxX}px`;
+            note.style.top = `${Math.random() * maxY}px`;
+            
+            zIndexCounter++;
+            note.style.zIndex = zIndexCounter;
+
+            document.body.appendChild(note);
+            allNotes.push(note); // 将便签存入数组
+            makeDraggable(note);
+        }
+
+        // 便签全部消失
+        function fadeOutAllNotes() {
+            allNotes.forEach((note, index) => {
+                // 逐个添加消失动画（带延迟，更自然）
+                setTimeout(() => {
+                    note.classList.add('fade-out');
+                    // 动画结束后移除元素
+                    setTimeout(() => note.remove(), 500);
+                }, index * 50);
+            });
+            // 清空数组
+            allNotes.length = 0;
+        }
+
+        // 拖拽功能
+        function makeDraggable(element) {
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+
+            let longPressTimer;
+            element.addEventListener('mousedown', (e) => {
+                longPressTimer = setTimeout(() => {
+                    startDrag(e);
+                }, 300);
+            });
+            element.addEventListener('touchstart', (e) => {
+                longPressTimer = setTimeout(() => {
+                    startDrag(e.touches[0]);
+                }, 300);
+            });
+
+            element.addEventListener('mouseup', () => clearTimeout(longPressTimer));
+            element.addEventListener('mouseleave', () => clearTimeout(longPressTimer));
+            element.addEventListener('touchend', () => clearTimeout(longPressTimer));
+
+            function startDrag(e) {
+                isDragging = true;
+                zIndexCounter++;
+                element.style.zIndex = zIndexCounter;
+                
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = parseFloat(element.style.left) || 0;
+                initialY = parseFloat(element.style.top) || 0;
+                element.style.cursor = 'grabbing';
+
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('touchmove', (e) => drag(e.touches[0]));
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                const x = e.clientX;
+                const y = e.clientY;
+                const deltaX = x - startX;
+                const deltaY = y - startY;
+
+                const newX = Math.max(0, Math.min(initialX + deltaX, window.innerWidth - element.offsetWidth));
+                const newY = Math.max(0, Math.min(initialY + deltaY, window.innerHeight - element.offsetHeight));
+
+                element.style.left = `${newX}px`;
+                element.style.top = `${newY}px`;
+            }
+
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+
+            function stopDrag() {
+                isDragging = false;
+                element.style.cursor = 'move';
+            }
+        }
+    </script>
+</body>
+</html>
