@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>给崽崽的一封信</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap">
+<style>
+:root{--sky:#3d2158;--sky2:#9a4f8e;--gold:#ffd3bd;--lilac:#fbcfe6;--paper:#fff3f8;--ink:#4a2c4f;--soft:#9a7599;--line:#f3cfe1;--card:#fff;
+--serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#2a1830;--ink:#f8e7f3;--soft:#c9a5c9;--line:#5a3562;--card:#37203f}}
+:root[data-theme="dark"]{--paper:#2a1830;--ink:#f8e7f3;--soft:#c9a5c9;--line:#5a3562;--card:#37203f}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,var(--paper),color-mix(in srgb,var(--lilac) 22%,var(--paper)));background-attachment:fixed;color:var(--ink);font-family:var(--serif);line-height:2;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* lock */
+body.locked main,body.locked #trail{display:none}
+#lock{position:fixed;inset:0;z-index:30;background:radial-gradient(120% 90% at 50% 100%,var(--sky2),var(--sky) 65%);color:#fff;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;transition:opacity .7s}
+#lock.gone{opacity:0;pointer-events:none}
+.lockbox{width:min(340px,100%)}
+.lk{font-size:40px;color:var(--lilac);animation:pulseh 2s infinite}
+@keyframes pulseh{50%{transform:scale(1.15)}}
+.lockbox h1{font-size:28px;font-weight:900;letter-spacing:.2em;margin:6px 0 4px}
+.hint{color:var(--lilac);font-size:15px;margin:0 0 26px;letter-spacing:.06em}
+.boxes{position:relative;display:flex;gap:9px;justify-content:center}
+.boxes span{width:44px;height:56px;border:2px solid rgba(251,207,230,.5);border-radius:16px;background:rgba(255,255,255,.08);font-size:26px;line-height:52px;font-weight:600;color:#fff;transition:border-color .2s,background .2s}
+.boxes span.cur{border-color:var(--gold);background:rgba(255,255,255,.16)}
+.boxes input{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;background:none;cursor:pointer}
+.boxes.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+#err{height:24px;margin-top:18px;font-size:14px;color:#ffb3cc}
+
+/* cover */
+#cover{position:fixed;inset:0;z-index:20;background:radial-gradient(120% 90% at 50% 100%,var(--sky2),var(--sky) 65%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;transition:transform 1.1s cubic-bezier(.7,0,.2,1),opacity .6s .5s}
+#cover.gone{transform:translateY(-100%);opacity:0;pointer-events:none}
+#stars{position:absolute;inset:0;overflow:hidden}
+#stars b{position:absolute;color:var(--lilac);opacity:0;font-weight:400;animation:fl var(--d) linear infinite}
+@keyframes fl{0%{transform:translateY(0) rotate(0);opacity:0}15%{opacity:.7}100%{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+#stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.5;animation:tw 4s infinite}
+@keyframes tw{50%{opacity:.1}}
+.map{position:relative;width:min(340px,80vw);height:200px;margin-bottom:12px}
+.map svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.arc{fill:none;stroke:var(--gold);stroke-width:1.5;stroke-dasharray:5 6;stroke-dashoffset:300;animation:draw 3s .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pin{position:absolute;font-size:14px;color:var(--lilac);white-space:nowrap}
+.pin::before{content:"";display:block;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px 4px rgba(255,190,215,.55);margin:0 auto 6px}
+.pin.a{left:2%;bottom:0;transform:translateX(-10%)}
+.pin.b{right:2%;top:0}
+#cover h1{font-size:clamp(34px,9vw,52px);font-weight:900;letter-spacing:.14em;margin:6px 0 4px}
+#cover p{margin:0 0 30px;color:var(--lilac);font-size:15px;letter-spacing:.08em}
+#open{position:relative;background:var(--gold);color:var(--sky);border:0;border-radius:40px;padding:12px 38px;font-size:17px;font-weight:600;letter-spacing:.2em;animation:pulse 2.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,190,215,.5)}70%,100%{box-shadow:0 0 0 18px rgba(255,190,215,0)}}
+
+/* progress: 曲靖 → 承德 */
+#trail{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:min(560px,86vw);z-index:10;height:22px;display:flex;align-items:center;font-size:12px;color:var(--soft);pointer-events:none}
+#trail .rail{flex:1;height:0;border-top:1.5px dashed var(--line);margin:0 8px;position:relative}
+#trail .dot{position:absolute;top:-6px;left:0;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px 2px rgba(255,190,215,.7)}
+
+main{max-width:640px;margin:0 auto;padding:64px 16px 60px}
+section{padding:38px 26px;margin:0 0 22px;background:var(--card);border-radius:28px;box-shadow:0 10px 32px rgba(154,79,142,.12);border:1px solid var(--line)}
+h2::before{content:"♡ ";color:#e97fb0}
+h2{font-size:22px;font-weight:600;letter-spacing:.1em;margin:0 0 26px}
+p{margin:0 0 1.2em;font-size:17px}
+.q{color:var(--soft);padding-left:14px;border-left:2px solid var(--gold);font-size:16px}
+.hi{font-size:26px;font-weight:900;letter-spacing:.12em;line-height:1.7}
+.line{opacity:.15;transform:translateX(-8px);transition:opacity .8s,transform .8s}
+.line.on{opacity:1;transform:none}
+.intro .line{font-size:17px}
+
+/* memory cards you can tap */
+.memos{display:grid;gap:12px;margin:8px 0 26px}
+.memo{background:color-mix(in srgb,var(--lilac) 18%,var(--card));border:1px solid var(--line);border-radius:22px;padding:14px 20px;text-align:left;color:var(--ink);font-size:16px;line-height:1.8;width:100%;transition:transform .3s,box-shadow .3s}
+.memo b{display:block;font-size:15px;color:var(--soft);font-weight:600}
+.memo span{display:block;max-height:0;overflow:hidden;opacity:0;transition:max-height .5s,opacity .5s,margin .5s;color:var(--soft);font-size:15px}
+.memo[aria-expanded=true]{box-shadow:0 8px 24px rgba(154,79,142,.22);transform:translateY(-2px)}
+.memo[aria-expanded=true] span{max-height:140px;opacity:1;margin-top:6px}
+
+/* gift */
+.gift{display:flex;flex-direction:column;align-items:center;margin:10px 0 30px}
+#gate{background:none;border:0;padding:0;position:relative;width:170px}
+#gate svg{width:100%;display:block;transition:transform .25s}
+#gate:active svg{transform:scale(.94)}
+#gate.hop svg{animation:hop .6s}
+@keyframes hop{30%{transform:translateY(-22px) rotate(-4deg)}60%{transform:translateY(0) rotate(3deg)}}
+#say{position:absolute;left:50%;top:-38px;transform:translateX(-50%) scale(.6);background:var(--gold);color:var(--sky);border-radius:20px;padding:5px 16px;font-size:17px;font-weight:900;white-space:nowrap;opacity:0;transition:.3s}
+#gate.hop #say{opacity:1;transform:translateX(-50%) scale(1)}
+.tip{font-size:13px;color:var(--soft);margin-top:10px}
+
+/* end */
+.end{text-align:center}
+.end .hi{font-size:40px;margin:0 0 20px}
+#cake{background:none;border:0;padding:0;width:230px;margin:18px auto 0;display:block}
+#cake svg{width:100%;display:block;transition:transform .25s}
+#cake:active svg{transform:scale(.95)}
+.flames{transform-origin:120px 52px;transition:opacity .35s,transform .35s}
+.fl1{animation:fk .5s infinite alternate;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes fk{to{transform:scale(1.12,.9) rotate(4deg)}}
+#cake.out .flames{opacity:0;transform:translateY(6px) scale(.6)}
+.heart{position:fixed;bottom:22vh;color:#e97fb0;pointer-events:none;z-index:15;animation:up var(--d) ease-out forwards}
+.sign{margin-top:36px;color:var(--soft)}
+.lantern{position:fixed;bottom:-40px;width:26px;height:34px;border-radius:12px 12px 10px 10px;background:radial-gradient(circle at 50% 60%,#fff0f5,#ffc2da 60%,#f08fb8);box-shadow:0 0 26px 8px rgba(255,170,205,.55);pointer-events:none;z-index:15;animation:up var(--d) ease-in forwards}
+@keyframes up{to{transform:translate(var(--x),-115vh);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.line{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body class="locked">
+<div id="lock">
+  <div class="lockbox">
+    <div class="lk">♡</div>
+    <h1>输入密码</h1>
+    <p class="hint">提示：你的生日（6位数字）</p>
+    <div class="boxes" id="boxes"><span></span><span></span><span></span><span></span><span></span><span></span>
+      <input id="pw" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" aria-label="六位数字密码">
+    </div>
+    <div id="err" role="alert"></div>
+  </div>
+</div>
+
+
+<div id="cover">
+  <div id="stars"></div>
+  <div class="map">
+    <svg viewBox="0 0 340 200"><path class="arc" d="M22 180 Q 130 20 318 22"/></svg>
+    <div class="pin a">云南 · 曲靖</div>
+    <div class="pin b">河北 · 承德</div>
+  </div>
+  <h1>给崽崽的一封信</h1>
+  <p>2021 — 现在</p>
+  <button id="open">拆开</button>
+</div>
+
+<div id="trail" aria-hidden="true"><span>曲靖</span><div class="rail"><div class="dot" id="dot"></div></div><span>承德</span></div>
+
+<main id="letter">
+<section class="intro">
+  <p class="line">其实这次我也想过，要不要像以前一样，认认真真给你写一封手写信。</p>
+  <p class="line">但是最后还是没有写在纸上。</p>
+  <p class="line">一是因为我的字确实不太好看，写出来可能你看着都费劲（笑）。</p>
+  <p class="line">二是因为我觉得，这次的信好像不太适合只写在一张纸上。毕竟我们从2021年认识到现在，已经认识这么多年了，中间有很多聊天、很多小事情，还有一些我一直记得的回忆。</p>
+  <p class="line">所以这次就想着，换一种方式，把它做成一个小小的网站送给你。</p>
+  <p class="line">以后你哪天突然想起来了，也可以再打开看看。</p>
+  <p class="line">可能它没有一封真正手写的信那么有感觉，但至少这些话，是我真的想了挺久才写下来的。</p>
+  <p class="line hi">所以，崽崽。<br>生日快乐。</p>
+  <p class="line">这封信，现在正式开始。</p>
+</section>
+
+<section>
+  <h2>从2021年开始</h2>
+  <p class="line">从2021年认识到现在，真的已经过去挺久了。</p>
+  <p class="line">刚认识你的时候，我们应该都没想过，两个隔着这么远的人，一个在河北，一个在云南，居然能认识这么多年。</p>
+  <p class="line">其实在认识你之前，我这个人还是挺内向的，也不太会主动跟别人聊天，更别说跟一个刚认识的人分享自己的生活了。</p>
+  <p class="line">但和你慢慢熟悉以后，好像也一点一点变得不太一样了。</p>
+  <p class="line">以前不太敢说的话，会慢慢开始跟你说；以前觉得没什么好分享的事情，也会想着告诉你。</p>
+  <p class="line">可能连我自己都没注意到，但现在回头看看，你确实让我变得比以前更愿意表达自己了一点。</p>
+  <p class="line">以前我们真的挺能聊的。</p>
+  <p class="line">每天有什么事情，开心的、不开心的，或者一些乱七八糟的小事，都会跟对方说。</p>
+  <p class="line">现在想起来，其实很多事情都不是什么大事，但就是因为有人愿意分享，所以那些普通的日子也变得有点不一样。</p>
+</section>
+
+<section>
+  <h2>我还记得</h2>
+  <div class="memos">
+    <button class="memo" aria-expanded="false"><b>高考结束以后</b><span>我去学驾照的那段时间。你那时候天天早上把我叫起来，然后喊我一起打和平精英。现在想想还挺好笑的，我那时候可能最期待的不是去学驾照，而是早上起来看你有没有叫我打游戏。</span></button>
+    <button class="memo" aria-expanded="false"><b>你发来的照片</b><span>你以前出去玩的时候，也经常会把拍的照片发给我看看。虽然我们一直都离得很远，但是看到你发来的那些照片，好像也能稍微参与一点你的生活。</span></button>
+  </div>
+  <p class="tip" style="text-align:center;color:var(--soft);font-size:13px;margin-top:-14px">点一点，展开回忆</p>
+  <p class="line">后来我们都上了大学，事情越来越多，生活也慢慢变成了各自的样子。</p>
+  <p class="line">联系也不像以前那么频繁了，有时候甚至很久都不会聊几句。</p>
+  <p class="line">其实我也知道，这应该是很正常的事情。</p>
+  <p class="line">人长大以后，总会有自己的生活，也不可能一直像以前一样每天都有很多话说。</p>
+  <p class="line">只是偶尔还是会觉得挺可惜的。</p>
+  <p class="line">以前明明什么都能聊，现在有时候想找你聊天，却又不知道该从哪里开始。</p>
+  <p class="line">而且我本身确实不太会聊天。</p>
+  <p class="line">有时候你跟我说一些事情，我其实挺想好好回应你的，但最后回出来的话可能很简单，甚至有时候自己回完都觉得：</p>
+  <p class="line q">“我这回的是什么啊……”</p>
+  <p class="line">所以如果以前有时候我回得不太好，或者没能很好地接住你的话，你别太往心里去。</p>
+  <p class="line">不是不想跟你聊，只是我这个人确实不太会表达。</p>
+</section>
+
+<section>
+  <h2>本来想去找你</h2>
+  <p class="line">其实这次本来还计划着国庆去找你。</p>
+  <p class="line">想着都认识这么多年了，这次你的生日如果能去陪你过一下，好像也挺好的。</p>
+  <p class="line">但是家里临时有点事情，所以这次就没办法过去了。</p>
+  <p class="line">说实话还是有一点可惜的。</p>
+  <p class="line">毕竟认识这么多年，我们一直都隔着这么远，也确实很少有机会真正见面。</p>
+  <p class="line">不过没关系，反正以后还有机会。</p>
+  <p class="line">等以后有合适的时间，我再去找你，到时候再好好陪你玩一次。</p>
+  <p class="line">就当这次先欠着，等以后有机会再补上。</p>
+  <p class="line">所以这次只能先用这种方式陪你过生日啦。</p>
+</section>
+
+<section>
+  <h2>认识这么久</h2>
+  <p class="line">不过不管现在联系多还是少，我还是挺珍惜我们认识这么久的。</p>
+  <p class="line">毕竟从2021年到现在，我们已经经历了这么多年，也看着彼此从以前的学生慢慢走到了现在的大学生活。</p>
+  <p class="line">虽然没有真正生活在同一个地方，但也算是用另一种方式参与过彼此的一段生活。</p>
+  <p class="line">所以这次，就借着你的生日，再给你写一次。</p>
+  <p class="line hi">生日快乐。</p>
+  <p class="line">希望你新的一岁可以过得开心一点，想做的事情都能慢慢实现。</p>
+  <p class="line">也希望以后遇到开心的事情还是会有人可以分享，遇到不开心的时候也有人可以听你说。</p>
+  <p class="line">至于我们以后会怎么样，我其实也没想那么多。</p>
+  <p class="line">只希望我们不要因为生活越来越忙，就慢慢变成彻底没有联系的两个人。</p>
+  <p class="line">哪天你突然想起以前的事情，想起那个云南的男生，想找个人聊聊天的时候，还能想起来有我这么一个人。</p>
+</section>
+
+<section>
+  <h2>还有一份来自曲靖的小礼物</h2>
+  <div class="gift">
+    <button id="gate" aria-label="点一下南城门小家伙">
+      <span id="say">我森子滴！</span>
+      <svg viewBox="0 0 200 210" role="img" aria-label="南城门兄弟玩偶：黄色屋顶帽子、灰色城墙身体、胸前球靖牌匾">
+        <ellipse cx="100" cy="200" rx="66" ry="8" fill="#000" opacity=".14"/>
+        <ellipse cx="66" cy="190" rx="28" ry="14" fill="#f6f3ee"/><ellipse cx="134" cy="190" rx="28" ry="14" fill="#f6f3ee"/>
+        <ellipse cx="34" cy="144" rx="14" ry="20" fill="#f6f3ee" transform="rotate(20 34 144)"/><ellipse cx="166" cy="144" rx="14" ry="20" fill="#f6f3ee" transform="rotate(-20 166 144)"/>
+        <rect x="42" y="112" width="116" height="80" rx="28" fill="#9c9ca2"/>
+        <path d="M48 116h10v-8h10v8h10v-8h10v8h10v-8h10v8h10v-8h10v8h10v-8h10v8h4v10H48z" fill="#b6b6bb"/>
+        <ellipse cx="54" cy="76" rx="11" ry="22" fill="#ffd83a"/><ellipse cx="146" cy="76" rx="11" ry="22" fill="#ffd83a"/>
+        <circle cx="100" cy="76" r="44" fill="#fde5cb"/>
+        <path d="M54 70q0-30 46-30t46 30q-12-12-46-12T54 70z" fill="#ffd83a"/>
+        <ellipse cx="100" cy="34" rx="56" ry="22" fill="#ffd83a"/>
+        <path d="M44 32q-4-12 10-14q-6 6-2 12zM156 32q4-12-10-14q6 6 2 12z" fill="#ffd83a" stroke="#8a2b2b" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M50 40q50 14 100 0" fill="none" stroke="#8a2b2b" stroke-width="3" stroke-linecap="round"/>
+        <rect x="56" y="45" width="88" height="10" rx="5" fill="#6fa8d6"/>
+        <ellipse cx="82" cy="78" rx="8" ry="10" fill="#151515"/><ellipse cx="118" cy="78" rx="8" ry="10" fill="#151515"/>
+        <circle cx="85" cy="74" r="2.6" fill="#fff"/><circle cx="121" cy="74" r="2.6" fill="#fff"/>
+        <path d="M68 64l24 6M132 64l-24 6" stroke="#151515" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="66" cy="94" r="9" fill="#e6c08a"/><circle cx="134" cy="94" r="9" fill="#e6c08a"/>
+        <path d="M93 97q7 5 14 0q-7 2-14 0z" fill="#b5443f" stroke="#b5443f" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="80" y="140" width="40" height="22" rx="3" fill="#d98a3a" stroke="#7a4a1f" stroke-width="2"/>
+        <text x="100" y="156" text-anchor="middle" font-size="13" font-weight="900" fill="#fff2d6" font-family="Noto Serif SC,serif">球靖</text>
+      </svg>
+    </button>
+    <div class="tip">点一下它</div>
+  </div>
+  <p class="line">对了，还有你已经知道的那个小礼物。</p>
+  <p class="line">因为我是曲靖人，所以里面也放了一点属于曲靖的东西。</p>
+  <p class="line">它是以曲靖南城门为元素做的一个小家伙，圆圆的，看起来有点呆，但其实身上藏着一些曲靖自己的小特色。</p>
+  <p class="line">比如它胸口的牌匾上写着“球靖”，还有那个属于我们曲靖人的小暗号——</p>
+  <p class="line q">“我森子滴！”</p>
+  <p class="line">所以它不只是一个小摆件，也算是我从云南带给你的一点家乡味道。</p>
+  <p class="line">以后你看到它的时候，就当它替我在河北陪你一会儿吧。</p>
+</section>
+
+<section class="end">
+  <p class="hi">生日快乐。</p>
+  <p class="line">认识你这么多年，挺好的。</p>
+  <p class="line">也希望以后还有很多个生日，我还能有机会跟你说一句——</p>
+  <p class="hi" style="margin-top:.6em">生日快乐。</p>
+  <button id="cake" aria-label="点一下吹蜡烛" aria-pressed="false">
+    <svg viewBox="0 0 240 230" role="img" aria-label="写着20岁生日的蛋糕">
+      <ellipse cx="120" cy="212" rx="105" ry="12" fill="#e78fb7" opacity=".45"/>
+      <rect x="28" y="128" width="184" height="78" rx="16" fill="#f6b9d2"/>
+      <rect x="58" y="86" width="124" height="52" rx="14" fill="#fff0f5" stroke="#f3cfe1" stroke-width="2"/>
+      <path d="M58 100q10 16 20 0t20 0 20 0 20 0 20 0 20 0v-4q0-10-10-10H68q-10 0-10 10z" fill="#ffd3bd"/>
+      <path d="M28 146q11 16 22 0t22 0 22 0 22 0 22 0 22 0 22 0 22 0v-6q0-12-12-12H40q-12 0-12 12z" fill="#fff0f5"/>
+      <text x="120" y="188" text-anchor="middle" font-size="24" font-weight="900" fill="#7c3a6c" font-family="Noto Serif SC,serif" letter-spacing="3">20岁生日</text>
+      <circle cx="46" cy="176" r="4" fill="#e97fb0"/><circle cx="194" cy="176" r="4" fill="#e97fb0"/>
+      <circle cx="80" cy="120" r="3.5" fill="#f08fb8"/><circle cx="160" cy="120" r="3.5" fill="#f08fb8"/>
+      <g><rect x="100" y="52" width="9" height="34" rx="3" fill="#f6b9d2"/><rect x="100" y="60" width="9" height="4" fill="#fff"/><rect x="100" y="72" width="9" height="4" fill="#fff"/>
+         <rect x="131" y="52" width="9" height="34" rx="3" fill="#c9b6f0"/><rect x="131" y="60" width="9" height="4" fill="#fff"/><rect x="131" y="72" width="9" height="4" fill="#fff"/></g>
+      <g class="flames"><path class="fl1" d="M104.5 30q9 12 0 22q-9-10 0-22z" fill="#ffb347"/><path class="fl1" d="M135.5 30q9 12 0 22q-9-10 0-22z" fill="#ffb347" style="animation-delay:.3s"/>
+         <path d="M104.5 40q4 6 0 11q-4-5 0-11zM135.5 40q4 6 0 11q-4-5 0-11z" fill="#fff3b0"/></g>
+    </svg>
+  </button>
+  <p class="tip" id="wish" style="margin:6px 0 0">点一下蛋糕，吹蜡烛许个愿</p>
+  <p class="sign">—— 小羊(杨睿)</p>
+</section>
+</main>
+
+<script>
+(function(){
+  // password
+  var pw=document.getElementById('pw'),bx=document.getElementById('boxes'),bs=bx.querySelectorAll('span'),er=document.getElementById('err'),lock=document.getElementById('lock');
+  var KEY=['06','10','07'].join('');
+  function paint(){var v=pw.value;for(var i=0;i<6;i++){bs[i].textContent=v[i]?'●':'';bs[i].className=(i===v.length&&document.activeElement===pw)?'cur':''}}
+  pw.addEventListener('input',function(){
+    pw.value=pw.value.replace(/\D/g,'').slice(0,6);er.textContent='';paint();
+    if(pw.value.length===6){
+      if(pw.value===KEY){lock.classList.add('gone');document.body.classList.remove('locked');setTimeout(function(){lock.style.display='none'},800)}
+      else{er.textContent='密码不对，再想想～';bx.classList.remove('shake');void bx.offsetWidth;bx.classList.add('shake');setTimeout(function(){pw.value='';paint()},450)}
+    }
+  });
+  pw.addEventListener('focus',paint);pw.addEventListener('blur',paint);
+  lock.addEventListener('click',function(){pw.focus()});
+  pw.focus();paint();
+
+  // stars
+  var st=document.getElementById('stars'),h='';
+  for(var i=0;i<60;i++)h+='<i style="left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-delay:'+Math.random()*4+'s"></i>';
+  for(var j=0;j<14;j++)h+='<b style="left:'+Math.random()*100+'%;bottom:-30px;font-size:'+(12+Math.random()*14)+'px;--d:'+(9+Math.random()*9)+'s;animation-delay:'+Math.random()*9+'s">'+(j%3?'♡':'✿')+'</b>';
+  st.innerHTML=h;
+
+  var cover=document.getElementById('cover'),trail=document.getElementById('trail');
+  document.body.style.overflow='hidden';trail.style.opacity=0;
+  document.getElementById('open').onclick=function(){
+    cover.classList.add('gone');document.body.style.overflow='';trail.style.transition='opacity 1s .8s';trail.style.opacity=1;
+    window.scrollTo(0,0);
+  };
+
+  // reveal lines
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.35});
+  document.querySelectorAll('.line').forEach(function(l){io.observe(l)});
+
+  // progress dot 曲靖 -> 河北
+  var dot=document.getElementById('dot');
+  function prog(){
+    var m=document.documentElement,max=m.scrollHeight-innerHeight,p=max>0?Math.min(1,scrollY/max):0,w=dot.parentNode.clientWidth-10;
+    dot.style.left=(p*w)+'px';
+  }
+  addEventListener('scroll',prog,{passive:true});addEventListener('resize',prog);prog();
+
+  // memory cards
+  document.querySelectorAll('.memo').forEach(function(b){
+    b.onclick=function(){b.setAttribute('aria-expanded',b.getAttribute('aria-expanded')!=='true')};
+  });
+
+  // gate mascot
+  var gate=document.getElementById('gate'),t;
+  gate.onclick=function(){
+    gate.classList.remove('hop');void gate.offsetWidth;gate.classList.add('hop');
+    clearTimeout(t);t=setTimeout(function(){gate.classList.remove('hop')},1600);
+  };
+
+  // cake
+  var cake=document.getElementById('cake'),wish=document.getElementById('wish');
+  cake.onclick=function(){
+    var out=cake.classList.toggle('out');
+    cake.setAttribute('aria-pressed',out);
+    wish.textContent=out?'愿望我收到啦，20岁生日快乐！(再点一下重新点燃)':'点一下蛋糕，吹蜡烛许个愿';
+    if(!out)return;
+    for(var i=0;i<12;i++)(function(i){setTimeout(function(){
+      var h=document.createElement('div');h.className='heart';h.textContent=i%3?'♡':'✿';
+      h.style.left=(20+Math.random()*60)+'%';h.style.fontSize=(16+Math.random()*16)+'px';
+      h.style.setProperty('--x',(Math.random()*120-60)+'px');h.style.setProperty('--d',(3+Math.random()*3)+'s');
+      document.body.appendChild(h);setTimeout(function(){h.remove()},6500);
+    },i*120)})(i);
+  };
+})();
+</script>
+</body>
+</html>
